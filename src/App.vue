@@ -4,6 +4,9 @@
     <div class="title has-text-centered has-text-white">
       My ToDo List
     </div>
+
+<!--    <VTodoForm />-->
+<!--    <VTodoList />-->
     <form @submit.prevent="addTodo">
       <div class="field is-grouped mb-5">
         <p class="control is-expanded">
@@ -38,6 +41,14 @@
 //import
 import { ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
+// import VTodoForm from "@/components/v-todo-form.vue";
+// import VTodoList from "@/components/v-todo-list.vue";
+//import {defineComponent} from "vue";
+
+// export default defineComponent({
+//   components: {VTodoList, VTodoForm}
+// })
+
 
 //todo
 
