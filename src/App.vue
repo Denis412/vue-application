@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper-todo">
 
-    <div class="title has-text-centered">
+    <div class="title has-text-centered has-text-white">
       My ToDo List
     </div>
     <form @submit.prevent="addTodo">
@@ -16,14 +16,14 @@
     </form>
 
     <div v-for="todo in todos" :key="todo.id" class="card mb-5">
-      <div class="card-content">
+      <div class="card-content" :class="{'has-background-success-light': todo.done}">
         <div class="content">
           <div class="columns is-mobile is-vcentered">
             <div class="column" :class="{doneTodo: todo.done}">
               {{ todo.content }}
             </div>
             <div class="column is-5 has-text-right">
-              <button @click="doneTodo(todo.id)" class="button is-light">&check;</button>
+              <button @click="doneTodo(todo.id)" class="button" :class="todo.done ? 'is-success' : 'is-light'">&check;</button>
               <button @click="deleteTodo(todo.id)" class="button is-danger ml-2">&cross;</button>
             </div>
           </div>
@@ -66,7 +66,8 @@ const deleteTodo = (id) => {
 //doneTodo
 
 const doneTodo = (id) => {
-  todos.value.find(todo => todo.id === id).done = true;
+  const todoElement = todos.value.find(todo => todo.id === id);
+  todoElement.done = !todoElement.done;
 }
 </script>
 
