@@ -5,8 +5,6 @@
       My ToDo List
     </div>
 
-<!--    <VTodoForm />-->
-<!--    <VTodoList />-->
     <form @submit.prevent="addTodo">
       <div class="field is-grouped mb-5">
         <p class="control is-expanded">
@@ -39,28 +37,42 @@
 
 <script setup>
 //import
-import { ref } from "vue";
-import { v4 as uuidv4 } from "uuid";
-// import VTodoForm from "@/components/v-todo-form.vue";
-// import VTodoList from "@/components/v-todo-list.vue";
-//import {defineComponent} from "vue";
+import {onMounted, ref} from "vue";
+import { db } from "@/firebase"
+import { collection, onSnapshot, addDoc, doc, deleteDoc, updateDoc } from "firebase/firestore";
 
-// export default defineComponent({
-//   components: {VTodoList, VTodoForm}
-// })
+// firebase ref
 
+const todosCollectionRef = collection(db, 'todos');
 
 //todo
 
 const todos = ref([]);
+
+// get todos
+
+onMounted(() => {
+  onSnapshot(todosCollectionRef, (querySnapshot) => {
+    const fbTodos = [];
+    querySnapshot.forEach((doc) => {
+      const todo = {
+        id: doc.id,
+        content: doc.data().content,
+        done: doc.data().done,
+      };
+      fbTodos.push(todo);
+    });
+    todos.value = fbTodos;
+  });
+
+})
 
 //addTodo
 
 const newTodoContent = ref("");
 
 const addTodo = () => {
-  todos.value.unshift({
-    id: uuidv4(),
+  addDoc(todosCollectionRef, {
     content: newTodoContent.value,
     done: false,
   });
@@ -71,14 +83,18 @@ const addTodo = () => {
 //deleteTodo
 
 const deleteTodo = (id) => {
-  todos.value = todos.value.filter(todo => todo.id !== id);
+  deleteDoc(doc(todosCollectionRef, id));
 }
 
 //doneTodo
 
 const doneTodo = (id) => {
   const todoElement = todos.value.find(todo => todo.id === id);
-  todoElement.done = !todoElement.done;
+
+  updateDoc(doc(todosCollectionRef, id), {
+    done: !todoElement.done,
+  });
+
 }
 </script>
 
