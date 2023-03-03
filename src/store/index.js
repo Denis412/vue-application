@@ -8,22 +8,32 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "@/firebase";
+import { query, orderBy, limit } from "firebase/firestore";
 
 export default createStore({
   actions: {
-    FETCH_TODOS({ commit, getters }) {
-      onSnapshot(getters.COLLECTION_REF, (querySnapshot) => {
-        const fbTodos = [];
-        querySnapshot.forEach((doc) => {
-          const todo = {
-            id: doc.id,
-            content: doc.data().content,
-            done: doc.data().done,
-          };
-          fbTodos.push(todo);
+    async FETCH_TODOS({ commit, getters }) {
+      const collectionQuery = query(
+        getters.COLLECTION_REF,
+        orderBy("date", "desc")
+      );
+
+      try {
+        await onSnapshot(collectionQuery, (querySnapshot) => {
+          const fbTodos = [];
+          querySnapshot.forEach((doc) => {
+            const todo = {
+              id: doc.id,
+              content: doc.data().content,
+              done: doc.data().done,
+            };
+            fbTodos.push(todo);
+          });
+          commit("UPDATE_TODOS", fbTodos);
         });
-        commit("UPDATE_TODOS", fbTodos);
-      });
+      } catch (e) {
+        console.log(e.message);
+      }
     },
   },
   mutations: {
