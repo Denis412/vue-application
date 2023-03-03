@@ -17,7 +17,7 @@ import { useStore } from "vuex";
 import VInput from "@/components/VInput.vue";
 
 const store = useStore();
-const newTodoContent = ref("fsd");
+const newTodoContent = ref("");
 
 const addTodo = () => {
   store.commit("ADD_TODO", {
