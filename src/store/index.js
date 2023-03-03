@@ -8,12 +8,18 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "@/firebase";
+import { query, orderBy, limit } from "firebase/firestore";
 
 export default createStore({
   actions: {
     async FETCH_TODOS({ commit, getters }) {
+      const collectionQuery = query(
+        getters.COLLECTION_REF,
+        orderBy("date", "desc")
+      );
+
       try {
-        await onSnapshot(getters.COLLECTION_REF, (querySnapshot) => {
+        await onSnapshot(collectionQuery, (querySnapshot) => {
           const fbTodos = [];
           querySnapshot.forEach((doc) => {
             const todo = {

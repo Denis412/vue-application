@@ -23,6 +23,7 @@ const addTodo = () => {
   store.commit("ADD_TODO", {
     content: newTodoContent.value,
     done: false,
+    date: Date.now(),
   });
 
   newTodoContent.value = "";
