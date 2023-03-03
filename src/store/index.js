@@ -11,19 +11,23 @@ import { db } from "@/firebase";
 
 export default createStore({
   actions: {
-    FETCH_TODOS({ commit, getters }) {
-      onSnapshot(getters.COLLECTION_REF, (querySnapshot) => {
-        const fbTodos = [];
-        querySnapshot.forEach((doc) => {
-          const todo = {
-            id: doc.id,
-            content: doc.data().content,
-            done: doc.data().done,
-          };
-          fbTodos.push(todo);
+    async FETCH_TODOS({ commit, getters }) {
+      try {
+        await onSnapshot(getters.COLLECTION_REF, (querySnapshot) => {
+          const fbTodos = [];
+          querySnapshot.forEach((doc) => {
+            const todo = {
+              id: doc.id,
+              content: doc.data().content,
+              done: doc.data().done,
+            };
+            fbTodos.push(todo);
+          });
+          commit("UPDATE_TODOS", fbTodos);
         });
-        commit("UPDATE_TODOS", fbTodos);
-      });
+      } catch (e) {
+        console.log(e.message);
+      }
     },
   },
   mutations: {
