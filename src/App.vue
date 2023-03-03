@@ -19,8 +19,4 @@ import VTodoList from "@/components/VTodoList.vue";
   padding: 20px;
   margin: 0 auto;
 }
-
-.doneTodo {
-  text-decoration: line-through;
-}
 </style>
