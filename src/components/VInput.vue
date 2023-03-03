@@ -23,8 +23,6 @@ export default {
     const emitValue = (event) => {
       let value = event.target.value;
 
-      console.log(props.modelModifiers);
-
       if (props.modelModifiers.capitalize) {
         value = value.charAt(0).toUpperCase() + value.slice(1);
       }
