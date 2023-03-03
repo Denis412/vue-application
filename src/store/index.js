@@ -1,41 +1,59 @@
 import { createStore } from "vuex";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "@/firebase";
 
 export default createStore({
-    actions: {
-        fetchTodos({ commit }, limit = 3) {
-            fetch("https://jsonplaceholder.typicode.com/todos?_limit=" + limit)
-                .then(resolve => resolve.json())
-                .then(todos => commit('updateTodos', todos))
-                .catch(e => console.log(e))
-        }
+  actions: {
+    FETCH_TODOS({ commit, getters }) {
+      onSnapshot(getters.COLLECTION_REF, (querySnapshot) => {
+        const fbTodos = [];
+        querySnapshot.forEach((doc) => {
+          const todo = {
+            id: doc.id,
+            content: doc.data().content,
+            done: doc.data().done,
+          };
+          fbTodos.push(todo);
+        });
+        commit("UPDATE_TODOS", fbTodos);
+      });
     },
-    mutations: {
-        addTodo(state, todo) {
-            state.todos.unshift(todo);
-        },
-        deleteTodo(state, id) {
-            state.todos = state.todos.filter(todo => todo.id !== id);
-        },
-        doneTodo(state, id) {
-          const todoElement = state.todos.find(todo => todo.id === id);
-            //todoElement.completed = !todoElement.completed;
-        },
-        updateTodos(state, todos) {
-            state.todos = todos;
-        }
+  },
+  mutations: {
+    UPDATE_TODOS(state, todos) {
+      state.todos = todos;
     },
-    state: {
-        todos: [
-            {
-                id: 1,
-                title: "hello",
-                completed: false,
-            }
-        ],
+    ADD_TODO(state, todo) {
+      addDoc(state.collectionRef, todo);
     },
-    getters: {
-        allTodos(state) {
-            return state.todos;
-        }
+    DELETE_TODO(state, id) {
+      deleteDoc(doc(state.collectionRef, id));
     },
+    TOGGLE_DONE(state, id) {
+      const todo = state.todos.find((todo) => todo.id === id);
+
+      updateDoc(doc(state.collectionRef, id), {
+        done: !todo.done,
+      });
+    },
+  },
+  state: {
+    todos: [],
+    collectionRef: collection(db, "todos"),
+  },
+  getters: {
+    ALL_TODOS(state) {
+      return state.todos;
+    },
+    COLLECTION_REF(state) {
+      return state.collectionRef;
+    },
+  },
 });
